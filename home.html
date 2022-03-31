@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventory</title>
+    <link rel="stylesheet" href="css/styles.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  </head>
+  <body>
+    <button class="logout" id="gout">Logout</button>
+    <div class="form-container">
+      <div class="form">
+        <label>Barcode</label> <input class="inputs" type="number" id="roll">
+        <label>Category</label> <input class="inputs" type="text" id="name">
+        <label>Itemname</label> <input class="inputs" type="text" id="state">
+        <label>ItemPrice</label><input class="inputs" type="number" id="age">
+        <!-- <label>Country</label><input class="inputs" type="text" id="Country"> -->
+        <div class="allBtns">
+          <button id="ins">Insert</button>
+          <button id="rd">Read</button>
+          <button id="upd">Update</button>
+          <button id="del">Delete</button>
+        </div>
+      </div>
+    </div>
+    <script type="module">
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
+  import {
+      getAuth,
+      createUserWithEmailAndPassword,
+      signInWithEmailAndPassword,
+      signOut
+  } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
+    // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
+
+  // Your web app's Firebase configuration
+    const firebaseConfig = {
+    apiKey: "AIzaSyDNT290uW_pvG000Qh1-cQbBJH6aybVx5I",
+    authDomain: "webcrud-36422.firebaseapp.com",
+    databaseURL: "https://webcrud-36422-default-rtdb.firebaseio.com",
+    projectId: "webcrud-36422",
+    storageBucket: "webcrud-36422.appspot.com",
+    messagingSenderId: "149622668696",
+    appId: "1:149622668696:web:cf6325e5b9424417817fed"
+  };
+
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  import {getDatabase, ref, get, push, set, child, update, remove}
+  from "https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js";
+
+const db = getDatabase();
+const auth = getAuth();
+
+var barcode = document.getElementById('roll');
+var category = document.getElementById('name');
+var itemname = document.getElementById('state');
+var itemprice = document.getElementById('age');
+
+var insertBtn = document.getElementById('ins');
+var readBtn = document.getElementById('rd');
+var updateBtn = document.getElementById('upd');
+var deleteBtn = document.getElementById('del');
+
+
+function insertData(){
+  set(ref(db, "ItemByCategory/" +category.value+"/"+barcode.value),{
+    Code: barcode.value,
+    Category: category.value,
+    ItemName: itemname.value,
+    ItemPrice: itemprice.value,
+  })
+  .then(() =>{
+    alert("data stored successfully");
+  })
+  .catch((error)=>{
+    alert("unsuccessful, error"+error);
+  });
+}
+
+function selectData(){
+  const dbref = ref(db);
+
+  get(child(dbref,"ItemByCategory/"+category.value+"/"+barcode.value)).then((snapshot)=>{
+    if(snapshot.exists()){
+      itemname.value = snapshot.val().ItemName;
+      itemprice.value = snapshot.val().ItemPrice;
+    }
+    else{
+      alert("No data found");
+    }
+  })
+  .catch((error)=>{
+    alert("unsuccessful, error"+error);
+  });
+}
+
+function updateData(){
+  update(ref(db, "ItemByCategory/" +category.value+"/"+barcode.value),{
+    ItemName: itemname.value,
+    ItemPrice: itemprice.value,
+  })
+  .then(() =>{
+    alert("data Updated successfully");
+  })
+  .catch((error)=>{
+    alert("unsuccessful, error"+error);
+  });
+}
+
+function deleteData(){
+  remove(ref(db, "ItemByCategory/" +category.value+"/"+barcode.value))
+  .then(() =>{
+    alert("data Deleted successfully");
+  })
+  .catch((error)=>{
+    alert("unsuccessful, error"+error);
+  });
+}
+
+const bout = document.getElementById("gout");
+bout.addEventListener('click', (e) => {
+signOut(auth).then(() => {
+  alert("Log out successful");
+      window.location = 'index.html';
+       // Sign-out successful.
+}).catch((error) => {
+    // An error happened.
+
+});
+});
+
+insertBtn.addEventListener('click', insertData);
+readBtn.addEventListener('click', selectData);
+updateBtn.addEventListener('click', updateData);
+deleteBtn.addEventListener('click', deleteData);
+
+</script>
+  </body>
+</html>
